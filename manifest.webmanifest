@@ -1,0 +1,12 @@
+{
+  "name":"Taxi 31 111 – Klagenfurt",
+  "short_name":"Taxi 31 111",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#f4f5f7",
+  "theme_color":"#ffd400",
+  "lang":"de-AT",
+  "icons":[
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

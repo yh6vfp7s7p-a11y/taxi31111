@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#ffd400">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Taxi 31 111">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="style.css">
+  <title>Taxi 31 111</title>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand"><div class="logo">🚕</div><div><strong>Taxi 31 111</strong><span>Ihr Taxi in Klagenfurt</span></div></div>
+    <button id="locBtn" class="iconBtn" aria-label="Standort">⌖</button>
+  </header>
+
+  <main>
+    <section id="home" class="screen active">
+      <div class="heroMap">
+        <div class="mapBg">
+          <div class="road r1"></div><div class="road r2"></div><div class="road r3"></div>
+          <div class="water"></div>
+          <div class="pin userPin">●</div>
+          <div class="car c1">🚕</div><div class="car c2">🚕</div><div class="car c3">🚐</div>
+          <div class="mapLabel">Klagenfurt am Wörthersee</div>
+        </div>
+        <div class="mapBadge">● Demo-Live-Flotte</div>
+      </div>
+
+      <div class="homeActions">
+        <button class="primary big" onclick="openBooking(false)">🚕 Taxi bestellen</button>
+        <button class="secondary big" onclick="openBooking(true)">📅 Taxi vorbestellen</button>
+      </div>
+
+      <div id="activeCard" class="card hidden"></div>
+
+      <div class="quickGrid">
+        <button onclick="showScreen('rides')">🕘<span>Meine Fahrten</span></button>
+        <button onclick="showScreen('map')">🗺️<span>Karte</span></button>
+        <button onclick="showScreen('services')">⭐<span>Services</span></button>
+        <button onclick="showScreen('more')">☰<span>Mehr</span></button>
+      </div>
+    </section>
+
+    <section id="booking" class="screen">
+      <div class="screenHead"><button onclick="showScreen('home')">‹</button><h2 id="bookingTitle">Taxi bestellen</h2></div>
+      <div class="steps"><span class="step on">1</span><i></i><span class="step">2</span><i></i><span class="step">3</span></div>
+
+      <div class="field">
+        <label>Abholort</label>
+        <div class="inputRow"><span>📍</span><input id="pickup" value="Mein aktueller Standort"></div>
+        <button class="smallLink" onclick="useLocation()">Aktuellen Standort verwenden</button>
+      </div>
+
+      <div class="field">
+        <label>Wohin möchten Sie fahren?</label>
+        <div class="inputRow"><span>🔴</span><input id="destination" placeholder="Adresse, Hotel, Bahnhof ..."></div>
+        <div class="suggestions">
+          <button onclick="setDest('Flughafen Klagenfurt')">✈️ Flughafen Klagenfurt</button>
+          <button onclick="setDest('Klagenfurt Hauptbahnhof')">🚆 Klagenfurt Hauptbahnhof</button>
+          <button onclick="setDest('Wörthersee')">🌊 Wörthersee</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Fahrzeug</label>
+        <div class="vehicleGrid">
+          <button class="vehicle selected" data-type="standard" onclick="selectVehicle('standard')">🚕<b>Standard-Taxi</b><small>Normale Fahrt</small></button>
+          <button class="vehicle" data-type="large" onclick="selectVehicle('large')">🚐<b>Großraumtaxi</b><small>Bis zu 8 Personen</small></button>
+        </div>
+      </div>
+
+      <div class="twoCols">
+        <div class="field"><label>Personen</label><select id="passengers"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div>
+        <div class="field"><label>Gepäck</label><select id="luggage"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+      </div>
+
+      <div id="prebookFields" class="field hidden">
+        <label>Vorbestellung</label>
+        <input id="dateTime" type="datetime-local">
+      </div>
+
+      <div class="field"><label>Weitere Wünsche / Hinweise</label><textarea id="notes" placeholder="z. B. Kindersitz, Skitransport ..."></textarea></div>
+
+      <p class="hint">Der Fahrpreis wird gemäß dem geltenden Taxi-Tarif berechnet.</p>
+      <button class="primary big" onclick="submitBooking()">Bestellung senden</button>
+    </section>
+
+    <section id="map" class="screen">
+      <div class="screenHead"><h2>Live-Flotte</h2></div>
+      <div class="heroMap tall"><div class="mapBg"><div class="road r1"></div><div class="road r2"></div><div class="road r3"></div><div class="water"></div>
+        <div class="pin userPin">●</div><div class="car c1">🚕</div><div class="car c2">🚕</div><div class="car c3">🚐</div><div class="mapLabel">Klagenfurt</div>
+      </div></div>
+      <div class="fleetList"><div>🟢 <b>Taxi 31101</b><span>Verfügbar · Demo</span></div><div>🟢 <b>Taxi 31102</b><span>Verfügbar · Demo</span></div><div>🟢 <b>Taxi 31103</b><span>Großraum · Demo</span></div></div>
+    </section>
+
+    <section id="rides" class="screen">
+      <div class="screenHead"><h2>Meine Fahrten</h2></div>
+      <div id="rideList" class="list"></div>
+    </section>
+
+    <section id="services" class="screen">
+      <div class="screenHead"><h2>Unsere Services</h2></div>
+      <div id="serviceList" class="serviceList"></div>
+    </section>
+
+    <section id="more" class="screen">
+      <div class="screenHead"><h2>Mehr</h2></div>
+      <div class="menuList">
+        <button>👤 <span>Profil</span> ›</button>
+        <button>⚙️ <span>Einstellungen</span> ›</button>
+        <button>🔒 <span>Datenschutz</span> ›</button>
+        <button>ℹ️ <span>Impressum</span> ›</button>
+        <a href="tel:+4346331111">☎️ <span>Taxi 31 111 anrufen</span> ›</a>
+        <a href="mailto:office@31111.at">✉️ <span>office@31111.at</span> ›</a>
+      </div>
+      <div class="contactCard"><b>Taxi 31 111</b><br>Ramsauerstraße 13<br>9020 Klagenfurt am Wörthersee</div>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <button data-screen="home" onclick="showScreen('home')">⌂<span>Start</span></button>
+    <button data-screen="booking" onclick="openBooking(false)">🚕<span>Bestellen</span></button>
+    <button data-screen="map" onclick="showScreen('map')">🗺️<span>Karte</span></button>
+    <button data-screen="rides" onclick="showScreen('rides')">🕘<span>Fahrten</span></button>
+    <button data-screen="more" onclick="showScreen('more')">☰<span>Mehr</span></button>
+  </nav>
+</div>
+<div id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
